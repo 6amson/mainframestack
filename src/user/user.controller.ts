@@ -8,9 +8,9 @@ import { updateUserdto } from "./dto/user.dto";
 export class UserController {
     constructor(private readonly userService: UserService) { }
 
-    // @Get()
-    // @Redirect('', 301)
-    // redirectToWebsite() {}
+    @Get()
+    @Redirect('https://documenter.getpostman.com/view/26141564/2s9Y5VVQWB', 301)
+    redirectToWebsite() {}
 
 
     @Post('user/signup')
