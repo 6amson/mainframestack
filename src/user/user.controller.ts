@@ -39,6 +39,12 @@ export class UserController {
         return this.userService.findUserAndUpdate(user, authHeader);
     }
 
+    @Post('user/unsubscribe')
+    async unsubscribe (@Headers('authorization') authHeader: string,){
+        
+        return this.userService.UnsubscribeNFTNotifs(authHeader)
+    }
+
     @Post('user/test')
     async testroute (@Res() response, @Headers('authorization') authHeader: string){
         const userProfile = await this.userService.testRoute(authHeader);

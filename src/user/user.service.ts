@@ -62,9 +62,11 @@ export class UserService {
 
     }
 
+
     private async findOne(mail: string): Promise<User> {
         return this.userModel.findOne({ email: mail }).exec();
     }
+
 
     private async triggerPushNotifs(payload: string, subscription: any): Promise<any> {
 
@@ -282,8 +284,7 @@ export class UserService {
 
                 console.log("Subscription on ERC-1155 started with ID %s", subscription1155.id)
 
-                // (await this.userModel.findOneAndUpdate(filter, update, { new: true })).NFTsubscriptionId;
-                return (subscription1155)
+                return await (await this.userModel.findOneAndUpdate(filter, update, { new: true })).NFTsubscriptionId;
 
             } catch (error) {
                 return error;
@@ -418,23 +419,39 @@ export class UserService {
                 if (endpoint == null || endpoint == "") {
                     throw new httpErrorException(`Something went wrong. Enable notification permission on your browser and retry`, HttpStatus.BAD_REQUEST);
                 } else {
-                    return (userProfile);
+                    await this.subscribeNFTNotifs(userId, user.contractAddress);
+                    return {userSubscribed: true};
                 }
-                // return (endpoint);
 
             } catch (error) {
-                return error;
+                return {userSubscribed: false};
             }
         }
 
         throw new httpErrorException('Wrong contract address or format, Please check again.', HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
-    // async UnsubscribeNFTNotifs(user: updateUserdto, verifyHeader: string): Promise<any> {
-    //     const { userId } = this.verifyAuth(verifyHeader) as any;
+    async UnsubscribeNFTNotifs(verifyHeader: string): Promise<any> {
+        const { userId } = this.verifyToken(verifyHeader) as any;
+        const filter = { _id: userId };
 
+        const update = {
+            $set: {
+                contractAddress: '',
+                subscriptionId: '',
+                NFTsubscriptionId: '',
+            }
+        };
 
-    // }
+        try {
+            await this.userModel.findOneAndUpdate(filter, update, { new: true }) as any;
+            return {userSubscribed: false};
+        } catch (error) {
+            return error;
+            // return {userSubscribed: false};
+
+        }
+    }
 
 
     async testRoute(id: string): Promise<any> {
@@ -442,7 +459,7 @@ export class UserService {
         let _id = userId;
 
         const userProfile = await this.userModel.findById(_id).exec();
-
+        return {}
         try {
             const { _id, contractAddress, subscriptionId } = userProfile;
             const payload = JSON.stringify({
