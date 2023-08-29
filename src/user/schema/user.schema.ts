@@ -6,21 +6,32 @@ export type UserDocument = HydratedDocument<User>;
 
 @Schema()
 export class User {
-    @Prop({required:true})
+    @Prop({ required: true })
     @IsNotEmpty()
     username: string;
-    @Prop({required:true, unique:true, lowercase:true})
+    @Prop({ required: true, unique: true, lowercase: true })
     @IsEmail()
     @IsNotEmpty()
     email: string;
-    @Prop({required:true})
+    @Prop({ required: true })
     @IsNotEmpty()
     password: string;
-    @Prop({required: false})
+    @Prop({ required: false })
     contractAddress: string;
-    @Prop({required: false, type: Object})
+    @Prop({ required: false, type: Object })
     subscriptionId: object;
-    @Prop({required: false})
+    @Prop({ required: false })
     NFTsubscriptionId: string;
+    @Prop({ required: false })
+    NFTNotification: [any];
+
+    // {
+    //     status: string,
+    //     addrFrom: string,
+    //     addrTo: string,
+    //     tokenId: string,
+    // }
+
+
 }
 export const UserSchema = SchemaFactory.createForClass(User);
