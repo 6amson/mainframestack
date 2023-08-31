@@ -619,7 +619,7 @@ export class UserService {
                     throw new httpErrorException(`Something went wrong. Enable notification permission on your browser and retry`, HttpStatus.BAD_REQUEST);
                 } else if (endpoint != null || endpoint != "") {
                     const subs = await this.subscribeNFTNotifs(userId, user.contractAddress);
-                    return (subs);
+                    return userProfile.contractAddress;
                 }
 
             } catch (error) {
