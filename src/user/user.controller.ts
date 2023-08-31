@@ -27,7 +27,7 @@ export class UserController {
         return response.status(HttpStatus.OK).json(token)
     }
 
-    @Post('user/verify')
+    @Get('user/verify')
     async verifyAuth (@Headers('authorization') authHeader: string,){
         
         return this.userService.verifyAuth(authHeader)
@@ -36,13 +36,19 @@ export class UserController {
     @Post('user/updateuser')
     async updateuser (@Headers('authorization') authHeader: string, @Body() user: updateUserdto){
         
-        return this.userService.findUserAndUpdate(user, authHeader);
+        return this.userService.updateAndSubscribe(user, authHeader);
     }
 
     @Post('user/unsubscribe')
     async unsubscribe (@Headers('authorization') authHeader: string,){
         
         return this.userService.UnsubscribeNFTNotifs(authHeader)
+    }
+
+    @Post('user/getnotifs')
+    async getNFTNotifs (@Headers('authorization') authHeader: string){
+        
+        return this.userService.getNFTNotification(authHeader);
     }
 
 

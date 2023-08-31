@@ -2,13 +2,12 @@ import { Injectable, HttpException, HttpStatus, } from "@nestjs/common";
 import { httpErrorException } from './user.exception';
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { User } from "./schema/user.schema";
+import { User, User2 } from "./schema/user.schema";
 import * as jwt from 'jsonwebtoken';
 const bcrypt = require('bcrypt');
 import { config } from 'dotenv';
 import { UserDto } from "./dto/user.dto";
 import { updateUserdto } from "./dto/user.dto";
-import { stringToHex } from "web3-utils";
 const Web3 = require("web3").default;
 const webpush = require('web-push');
 
@@ -28,11 +27,15 @@ const gcmapi: string = process.env.GCMAPI
 @Injectable()
 export class UserService {
 
-    constructor(@InjectModel(User.name) private userModel: Model<User>) { }
+    constructor(
+        @InjectModel(User.name) private userModel: Model<User>,
+        @InjectModel(User2.name) private user2Model: Model<User2>
+    ) { }
+
 
 
     //METHODS
-   private truncate = (string: string, limit: number) => {
+    private truncate = (string: string, limit: number) => {
         if (string.length <= limit) {
             return string;
         }
@@ -76,6 +79,10 @@ export class UserService {
         return this.userModel.findOne({ email: mail }).exec();
     }
 
+    private async findOne2(accountAddr: string): Promise<User2> {
+        return this.user2Model.findOne({ addr: accountAddr }).exec();
+    }
+
 
     private async triggerPushNotifs(payload: string, subscription: any): Promise<any> {
 
@@ -100,7 +107,7 @@ export class UserService {
 
 
     private async subscribeNFTNotifs(id: string, Address: string): Promise<any> {
-        const web3 = new Web3(`wss://mainnet.infura.io/ws/v3/999d41692ca8409990e9fe8d035916e7`);
+        const web3 = new Web3(`wss://mainnet.infura.io/ws/v3/${infura}`);
 
         const filter = { _id: id };
 
@@ -188,33 +195,108 @@ export class UserService {
                             [event.topics[1], event.topics[2], event.topics[3]]
                         );
 
-                        // if (transaction.from == "0x495f947276749ce646f68ac8c248420045cb7b5e") {
-                        //     console.log("Specified address sent an NFT!");
-                        // }
-                        // if (transaction.to == "0x495f947276749ce646f68ac8c248420045cb7b5e") {
-                        //     console.log("Specified address received an NFT!");
-                        // }
                         if (
                             event.address == Address
                         ) {
-                            console.log(`Event on contract address: ${Address}`);
-                            // return this.triggerPushNotifs(payload, subscriptionId);
+                            // (async () => {
+                            //     const userProfile = await this.userModel.findById(id).exec();
+
+                            //     if (userProfile.contractAddress == null || userProfile.contractAddress == '') {
+                            //         subscription721.unsubscribe(function (err, succ) {
+                            //             if (succ) {
+                            //                 return succ;
+                            //             } else if (err) {
+                            //                 return err;
+                            //             }
+                            //         });
+                            //         // Web3.eth.clearSubscriptions();
+
+                            //     } else if (userProfile.contractAddress != null || userProfile.contractAddress != '') {
+                            //         const { subscriptionId } = userProfile;
+                            //         const payload = JSON.stringify({
+                            //             title: transaction.from === "0x0000000000000000000000000000000000000000"
+                            //                 ? "New Mint"
+                            //                 : "New Transfer",
+                            //             body: transaction.from === "0x0000000000000000000000000000000000000000"
+                            //                 ? `\n` +
+                            //                 `NFT with Token ID ${transaction.tokenId}.\n` +
+                            //                 `minted in block ${event.blockNumber}.\n`
+                            //                 : `\n` +
+                            //                 `NFT with Token ID ${transaction.tokenId}.\n` +
+                            //                 `transferred in block ${event.blockNumber}.\n`,
+                            //             icon: 'https://res.cloudinary.com/dis6jfj29/image/upload/v1691076029/gaze_logo_no_background_dgy9tr.png',
+                            //         });
+
+
+                            //         await this.userModel.findOneAndUpdate(
+                            //             { _id: id },
+                            //             {
+                            //                 $push: {
+                            //                     NFTNotification: {
+                            //                         $each: [
+                            //                             {
+                            //                                 status: transaction.from === "0x0000000000000000000000000000000000000000"
+                            //                                     ? "New Mint"
+                            //                                     : "New Transfer"
+                            //                                 ,
+                            //                                 addrFrom: transaction.from === "0x0000000000000000000000000000000000000000"
+                            //                                     ? "0x000"
+                            //                                     : transaction.from
+                            //                                 ,
+                            //                                 addrTo: transaction.to,
+                            //                                 transactionHash: this.truncate(event.transactionHash, 25),
+                            //                                 blockNumber: event.blockNumber,
+                            //                                 tokenId: transaction.tokenId,
+                            //                             }
+                            //                         ],
+                            //                         $slice: -21
+                            //                     },
+                            //                 },
+                            //             },
+                            //         )
+
+                            //         await this.triggerPushNotifs(payload, subscriptionId);
+
+                            //         console.log(
+                            //             `\n` +
+                            //             `New ERC-712 transaction found in block ${event.blockNumber} with hash ${event.transactionHash}\n` +
+                            //             `From: ${transaction.from === "0x0000000000000000000000000000000000000000"
+                            //                 ? "New mint!"
+                            //                 : transaction.from
+                            //             }\n` +
+                            //             `To: ${transaction.to}\n` +
+                            //             `Token contract: ${event.address}\n` +
+                            //             `Token ID: ${transaction.tokenId}\n`,
+                            //         );
+                            //     }
+                            // })();
                         }
 
                         (async () => {
                             const userProfile = await this.userModel.findById(id).exec();
 
                             if (userProfile.contractAddress == null || userProfile.contractAddress == '') {
-                                subscription721.unsubscribe(function(err, succ){
-                                    if(succ){
+                                subscription721.unsubscribe(function (err, succ) {
+                                    if (succ) {
                                         return succ;
-                                    }else if (err){
+                                    } else if (err) {
                                         return err;
                                     }
                                 });
                                 // Web3.eth.clearSubscriptions();
 
                             } else if (userProfile.contractAddress != null || userProfile.contractAddress != '') {
+                                const { subscriptionId } = userProfile;
+                                const payload = JSON.stringify({
+                                    title: `🧑🏽‍🚀 GAZE\n`,
+                                    body: transaction.from === "0x0000000000000000000000000000000000000000"
+                                        ? `\n` +
+                                        `New NFT minted 🚀`
+                                        : `\n` +
+                                        `NFT transferred 🫱🏼‍🫲🏽`,
+                                    icon: 'https://res.cloudinary.com/dis6jfj29/image/upload/v1691076029/gaze_logo_no_background_dgy9tr.png',
+                                });
+
                                 await this.userModel.findOneAndUpdate(
                                     { _id: id },
                                     {
@@ -231,7 +313,7 @@ export class UserService {
                                                             : transaction.from
                                                         ,
                                                         addrTo: transaction.to,
-                                                        transactionHash: this.truncate(event.transactionHash, 15),
+                                                        transactionHash: this.truncate(event.transactionHash, 25),
                                                         blockNumber: event.blockNumber,
                                                         tokenId: transaction.tokenId,
                                                     }
@@ -242,6 +324,8 @@ export class UserService {
                                     },
                                 )
 
+                                await this.triggerPushNotifs(payload, subscriptionId);
+
                                 console.log(
                                     `\n` +
                                     `New ERC-712 transaction found in block ${event.blockNumber} with hash ${event.transactionHash}\n` +
@@ -251,19 +335,18 @@ export class UserService {
                                     }\n` +
                                     `To: ${transaction.to}\n` +
                                     `Token contract: ${event.address}\n` +
-                                    `Token ID: ${transaction.tokenId}\n` +
-                                    `userProfile: ${userProfile.contractAddress}`
+                                    `Token ID: ${transaction.tokenId}\n`,
                                 );
                             }
                         })();
-
-
                     }
                 });
 
+
+
                 console.log("Subscription on ERC-721 started with ID %s", subscription721.id);
                 const T721 = await this.userModel.findOneAndUpdate(filter, update, { new: true });
-                return T721;
+                return { contractAddress: T721.contractAddress };
                 // return subscription721.removeSubsription();
 
 
@@ -320,29 +403,85 @@ export class UserService {
                     if (
                         event.address == Address
                     ) {
-                        //subscription logic comes here
-                        console.log(`Event on contract address: ${Address}`);
-                    }
+                        (async () => {
+                            const userProfile = await this.userModel.findById(id).exec();
 
-                    //general subscription logic comes here
-                    console.log(
-                        `\n` +
-                        `New ERC-1155 transaction found in block ${event.blockNumber} with hash ${event.transactionHash}\n` +
-                        `Operator: ${transaction.operator}\n` +
-                        `From: ${transaction.from === "0x0000000000000000000000000000000000000000"
-                            ? "New mint!"
-                            : transaction.from
-                        }\n` +
-                        `To: ${transaction.to}\n` +
-                        `id: ${transaction.id}\n` +
-                        `value: ${transaction.value}`
-                    );
+                            if (userProfile.contractAddress == null || userProfile.contractAddress == '') {
+                                subscription721.unsubscribe(function (err, succ) {
+                                    if (succ) {
+                                        return succ;
+                                    } else if (err) {
+                                        return err;
+                                    }
+                                });
+                                // Web3.eth.clearSubscriptions();
+
+                            } else if (userProfile.contractAddress != null || userProfile.contractAddress != '') {
+                                const { subscriptionId } = userProfile;
+                                const payload = JSON.stringify({
+                                    title: transaction.from === "0x0000000000000000000000000000000000000000"
+                                        ? "New Mint"
+                                        : "New Transfer",
+                                    body: transaction.from === "0x0000000000000000000000000000000000000000"
+                                        ? `\n` +
+                                        `NFT with Token ID ${transaction.tokenId}.\n` +
+                                        `minted in block ${event.blockNumber}.\n`
+                                        : `\n` +
+                                        `NFT with Token ID ${transaction.tokenId}.\n` +
+                                        `transferred in block ${event.blockNumber}.\n`,
+                                    icon: 'https://res.cloudinary.com/dis6jfj29/image/upload/v1691076029/gaze_logo_no_background_dgy9tr.png',
+                                });
+
+                                await this.triggerPushNotifs(payload, subscriptionId);
+
+                                await this.userModel.findOneAndUpdate(
+                                    { _id: id },
+                                    {
+                                        $push: {
+                                            NFTNotification: {
+                                                $each: [
+                                                    {
+                                                        status: transaction.from === "0x0000000000000000000000000000000000000000"
+                                                            ? "New Mint"
+                                                            : "New Transfer"
+                                                        ,
+                                                        addrFrom: transaction.from === "0x0000000000000000000000000000000000000000"
+                                                            ? "0x000"
+                                                            : transaction.from
+                                                        ,
+                                                        addrTo: transaction.to,
+                                                        transactionHash: this.truncate(event.transactionHash, 25),
+                                                        blockNumber: event.blockNumber,
+                                                        tokenId: transaction.tokenId,
+                                                    }
+                                                ],
+                                                $slice: -21
+                                            },
+                                        },
+                                    },
+                                )
+
+                                console.log(
+                                    `\n` +
+                                    `New ERC-712 transaction found in block ${event.blockNumber} with hash ${event.transactionHash}\n` +
+                                    `From: ${transaction.from === "0x0000000000000000000000000000000000000000"
+                                        ? "New mint!"
+                                        : transaction.from
+                                    }\n` +
+                                    `To: ${transaction.to}\n` +
+                                    `Token contract: ${event.address}\n` +
+                                    `Token ID: ${transaction.tokenId}\n` +
+                                    `userProfile: ${userProfile.contractAddress}`
+                                );
+                            }
+                        })();
+                    }
                 });
 
                 console.log("Subscription on ERC-1155 started with ID %s", subscription1155.id)
 
                 const T1155 = await this.userModel.findOneAndUpdate(filter, update, { new: true });
-                return T1155;
+                return { contractAddress: T1155.contractAddress };
             } catch (error) {
                 return error;
             }
@@ -350,11 +489,13 @@ export class UserService {
 
     }
 
-    // private async getNFTMetadata(tokenid: string, Address: string): Promise<any> {
 
-    //     const tokenContract = Address;
-    //     const tokenId = tokenid
-    // }
+
+    private async getNFTNotifs(tokenid: string): Promise<any> {
+        const userProfile = await this.userModel.findById(tokenid).exec();
+        return userProfile.NFTNotification;
+    }
+
 
     // private async unsubscribeFromNFTNotifs(tokenid: string): Promise<any> {
 
@@ -372,6 +513,7 @@ export class UserService {
     //     }
     //     // return (userProfile.NFTsubscriptionId);
     // }
+
 
 
 
@@ -443,12 +585,12 @@ export class UserService {
             const refreshToken = this.generateRefreshToken(final.payload);
             const userId = final.payload;
             const userProfile = await this.userModel.findById(userId).exec();
-            const { contractAddress } = userProfile;
+            const { contractAddress, username } = userProfile;
 
             if (!contractAddress) {
-                return { refreshToken, userId, contractAddress: null };
+                return { refreshToken, userId, contractAddress: null, username };
             } else if (contractAddress) {
-                return { refreshToken, userId, contractAddress };
+                return { refreshToken, userId, contractAddress, username };
             }
 
         } catch (error) {
@@ -457,7 +599,7 @@ export class UserService {
 
     };
 
-    async findUserAndUpdate(user: updateUserdto, verifyHeader: string): Promise<any> {
+    async updateAndSubscribe(user: updateUserdto, verifyHeader: string): Promise<any> {
         const userId = this.verifyToken(verifyHeader) as any;
         const { endpoint } = user.subscriptionId as any;
 
@@ -477,8 +619,6 @@ export class UserService {
                     throw new httpErrorException(`Something went wrong. Enable notification permission on your browser and retry`, HttpStatus.BAD_REQUEST);
                 } else if (endpoint != null || endpoint != "") {
                     const subs = await this.subscribeNFTNotifs(userId, user.contractAddress);
-                    // return {userSubscribed: true};
-                    // return { "here": subs };
                     return (subs);
                 }
 
@@ -510,43 +650,49 @@ export class UserService {
             const subs = await this.userModel.findOneAndUpdate(filter, update, { new: true }) as any;
             return { contractAddress: subs.contractAddress };
         } catch (error) {
-           return error;
+            return error;
             // return {userSubscribed: false};
         }
-
-
     };
 
 
+    async getNFTNotification(verifyHeader: string): Promise<any> {
+        const { userId } = await this.verifyAuth(verifyHeader) as any;
+
+        return await this.getNFTNotifs(userId);
+    }
+
+
+
+
+
+    //Test routesb
     async tests(verifyHeader: string): Promise<any> {
         // const { userId } = this.verifyToken(id) as any;
         return await this.UnsubscribeNFTNotifs(verifyHeader);
-
-
-       const userProfile = await this.userModel.findById(_id).exec();
-        try {
-            const subs = await this.subscribeNFTNotifs(userId, userProfile.contractAddress);
-                    // return {userSubscribed: true};
-                    return {"here": subs};
-            // const { _id, contractAddress, subscriptionId } = userProfile;
-            // const payload = JSON.stringify({
-            //     title: 'GAZE NFT Notification',
-            //     body: 'Raskimono CLUB',
-            //     icon: 'https://res.cloudinary.com/dis6jfj29/image/upload/v1691076029/gaze_logo_no_background_dgy9tr.png',
-            // });
-            // // return await this.subscribeNFTNotifs(_id.toString(), contractAddress);
-            // // return this.unsubscribeFromNFTNotifs(_id.toString());
-            // return await this.triggerPushNotifs(payload, subscriptionId);
-        } catch (err) {
-            throw (err);
-        } 
 
     }
 
     async proto(verifyHeader: string): Promise<any> {
         const { contractAddress, userId } = await this.verifyAuth(verifyHeader) as any;
 
-        return await this.subscribeNFTNotifs(userId, contractAddress);
+        // return await this.subscribeNFTNotifs(userId, contractAddress);
+        const msg = 'dinosaur';
+
+        // const msgBuffer = ethereumJsUtil.toBuffer(msg);
+        // const msgHash = ethereumJsUtil.hashPersonalMessage(msgBuffer);
+        // const signatureBuffer = ethereumJsUtil.toBuffer(signature);
+        // const signatureParams = ethereumJsUtil.fromRpcSig(signatureBuffer);
+        // const publicKey = ethereumJsUtil.ecrecover(
+        //     msgHash,
+        //     signatureParams.v,
+        //     signatureParams.r,
+        //     signatureParams.s
+        // );
+        // const addressBuffer = ethereumJsUtil.publicToAddress(publicKey);
+        // const address = ethereumJsUtil.bufferToHex(addressBuffer);
+
+        // return(address);
     }
 }
 

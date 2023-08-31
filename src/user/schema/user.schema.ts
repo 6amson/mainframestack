@@ -3,6 +3,8 @@ import { IsEmail, IsNotEmpty } from 'class-validator';
 import { HydratedDocument } from 'mongoose';
 
 export type UserDocument = HydratedDocument<User>;
+export type UserDocument2 = HydratedDocument<User2>;
+
 
 @Schema()
 export class User {
@@ -24,14 +26,24 @@ export class User {
     NFTsubscriptionId: string;
     @Prop({ required: false })
     NFTNotification: [any];
+}
 
-    // {
-    //     status: string,
-    //     addrFrom: string,
-    //     addrTo: string,
-    //     tokenId: string,
-    // }
-
-
+export class User2 {
+    @Prop({ required: true, unique: true, })
+    @IsNotEmpty()
+    accountAddr: string;
+    @Prop({ required: true, unique: true, lowercase: true })
+    @Prop({ required: true })
+    @IsNotEmpty()
+    nounce: string;
+    @Prop({ required: false })
+    contractAddress: string;
+    @Prop({ required: false, type: Object })
+    subscriptionId: object;
+    @Prop({ required: false })
+    NFTsubscriptionId: string;
+    @Prop({ required: false })
+    NFTNotification: [any];
 }
 export const UserSchema = SchemaFactory.createForClass(User);
+export const UserSchema2 = SchemaFactory.createForClass(User2);
