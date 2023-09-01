@@ -39,7 +39,7 @@ export class UserController {
         return this.userService.updateAndSubscribe(user, authHeader);
     }
 
-    @Post('user/unsubscribe')
+    @Get('user/unsubscribe')
     async unsubscribe (@Headers('authorization') authHeader: string,){
         
         return this.userService.UnsubscribeNFTNotifs(authHeader)
