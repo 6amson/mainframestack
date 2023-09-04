@@ -269,7 +269,7 @@ export class UserService {
                                     }\n` +
                                     `To: ${transaction.to}\n` +
                                     `Token contract: ${event.address}\n` +
-                                    `Token ID: ${transaction.tokenId}\n`,
+                                    `Token ID: ${transaction.tokenId}\n`
                                 );
                             }
                         })();
