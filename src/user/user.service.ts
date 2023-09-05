@@ -109,6 +109,7 @@ export class UserService {
     private async subscribeNFTNotifs(id: string, Address: string): Promise<any> {
         const web3 = new Web3(`wss://mainnet.infura.io/ws/v3/${infura}`);
 
+
         const filter = { _id: id };
 
         let options721 = {
@@ -150,6 +151,7 @@ export class UserService {
             ERC165Abi,
             Address
         );
+
 
         //verify if the contract adddress is erc721 or erc1155, returns a boolean;
         const erc1155 = await newContract.methods.supportsInterface(ERC1155InterfaceId).call()
@@ -273,7 +275,7 @@ export class UserService {
                                     `Token aadr: ${Address}\n`
                                 );
                             }
-                        })();
+                        })()
                     }
                 });
 
@@ -560,7 +562,8 @@ export class UserService {
                 }
 
             } catch (error) {
-                return { userSubscribed: false };
+                // return { userSubscribed: false};
+                return error;
             }
         }
 
