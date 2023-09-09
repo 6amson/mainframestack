@@ -489,8 +489,7 @@ export class UserService {
 
 
     async signupMetamask(user: User2): Promise<{}> {
-        const existingUser = await this.findOne2(user.accountAddr);
-
+        const existingUser = await this.user2Model.findOne({ accounAddr: user.accountAddr }).exec();
 
         const { sign, msg } = user.signature;
         const options = {
@@ -501,8 +500,26 @@ export class UserService {
         const recovered = sigUtil.recoverPersonalSignature(options);
 
         if (existingUser && existingUser.accountAddr == recovered) {
-            // throw new httpErrorException('User with this email already exists', HttpStatus.CONFLICT);
-            return { existingUser };
+
+            const filter = { _id: existingUser._id };
+
+            const update = {
+                $set: {
+                    signature: user.signature,
+                }
+            };
+
+            await this.user2Model.findOneAndUpdate(filter, update, { new: true }) as any;
+
+            const accessToken = this.generateAccessToken(existingUser._id);
+            const refreshToken = this.generateRefreshToken(existingUser._id);
+            const id = existingUser._id.toString();
+
+            return {
+                accessToken,
+                refreshToken,
+                id,
+            }
         }
 
 
@@ -522,9 +539,8 @@ export class UserService {
 
         }
 
+        throw new httpErrorException(`Metamask address doesn't match`, HttpStatus.CONFLICT);
 
-
-        // return { nonce, newUser, existingUser, msg, addr: user.accountAddr };
     }
 
 
