@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, HttpStatus, Redirect, Param, Post, Headers, Put,Req, Res } from "@nestjs/common";
-import { User } from "./schema/user.schema";
+import { User, User2 } from "./schema/user.schema";
 import { UserService } from "./user.service";
-import { UserDto } from "./dto/user.dto";
+import { UserDto, metamaskDto } from "./dto/user.dto";
 import { updateUserdto } from "./dto/user.dto";
 
 @Controller()
@@ -16,6 +16,14 @@ export class UserController {
     @Post('user/signup')
     async Signup(@Res() response, @Body() user: User) {
         const newUSer = await this.userService.signup(user);
+        return response.status(HttpStatus.CREATED).json({
+            ...newUSer
+        })
+    }
+
+    @Post('user/signupmeta')
+    async SignupMeta(@Res() response, @Body() user: User2) {
+        const newUSer = await this.userService.signupMetamask(user);
         return response.status(HttpStatus.CREATED).json({
             ...newUSer
         })

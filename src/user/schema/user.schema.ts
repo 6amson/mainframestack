@@ -28,14 +28,13 @@ export class User {
     NFTNotification: [any];
 }
 
+@Schema()
 export class User2 {
-    @Prop({ required: true, unique: true, })
+    @Prop({ required: true, unique: true})
     @IsNotEmpty()
     accountAddr: string;
-    @Prop({ required: true, unique: true, lowercase: true })
-    @Prop({ required: true })
-    @IsNotEmpty()
-    nounce: string;
+    @Prop({ unique: true, required: true,  type: Object })
+    signature:  {sign: string, msg: string};
     @Prop({ required: false })
     contractAddress: string;
     @Prop({ required: false, type: Object })
