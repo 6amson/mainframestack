@@ -41,6 +41,12 @@ export class UserController {
         return this.userService.verifyAuth(authHeader)
     }
 
+    @Get('user/verifymeta')
+    async verifyMetaAuth (@Headers('authorization') authHeader: string,){
+        
+        return this.userService.verifyMetaAuth(authHeader)
+    }
+
     @Post('user/updateuser')
     async updateuser (@Headers('authorization') authHeader: string, @Body() user: updateUserdto){
         
