@@ -589,27 +589,6 @@ export class UserService {
     }
 
 
-    // private async unsubscribeFromNFTNotifs(tokenid: string): Promise<any> {
-
-    //     const userProfile = await this.userModel.findById(tokenid).exec();
-
-    //     if (userProfile.NFTsubscriptionId == null) {
-    //         return ('No subscription to NFT')
-    //     }
-
-    //     try {
-    //         const result = await subscription1155.unsubscribe(userProfile.NFTsubscriptionId);
-    //         return (`Successfully unsubscribed from the event: ${result}`);
-    //     } catch (error) {
-    //         return (`Error while unsubscribing from the event:, ${error}`);
-    //     }
-    //     // return (userProfile.NFTsubscriptionId);
-    // }
-
-
-
-
-
 
 
     //ROUTES
@@ -761,29 +740,6 @@ export class UserService {
 
     };
 
-
-    public async verifyMetaAuth(verifyHeader: string): Promise<object> {
-        const token = verifyHeader;
-
-        const final = this.validateToken(token, accessTokenSecret) as any;
-
-        try {
-            const refreshToken = this.generateRefreshToken(final.payload);
-            const userId = final.payload;
-
-            const user2Profile = await this.user2Model.findById(userId).exec();
-            const { contractAddress } = user2Profile;
-
-            if (!contractAddress) {
-                return { refreshToken, userId, contractAddress: null };
-            } else if (contractAddress) {
-                return { refreshToken, userId, contractAddress };
-            }
-        } catch (error) {
-            console.log(error.message);
-        }
-
-    };
 
     async updateAndSubscribe(user: updateUserdto, verifyHeader: string): Promise<any> {
         const userId = this.verifyToken(verifyHeader) as any;
