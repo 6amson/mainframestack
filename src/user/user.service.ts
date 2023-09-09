@@ -500,6 +500,7 @@ export class UserService {
         const recovered = sigUtil.recoverPersonalSignature(options);
 
         if (existingUser && existingUser.accountAddr == recovered) {
+            await this.user2Model.collection.dropIndexes();
 
             const filter = { _id: existingUser._id };
 
