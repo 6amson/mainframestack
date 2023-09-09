@@ -206,7 +206,7 @@ export class UserService {
                         );
 
                         if (
-                            event.address
+                            event.address == Address
                         ) {
                             (async () => {
                                 const userProfile = await this.userModel.findById(id).exec();
@@ -309,7 +309,7 @@ export class UserService {
                                         await this.triggerPushNotifs(payload, subscriptionId);
 
 
-                                        await this.userModel.findOneAndUpdate(
+                                        await this.user2Model.findOneAndUpdate(
                                             { _id: id },
                                             {
                                                 $push: {
@@ -360,7 +360,14 @@ export class UserService {
 
                 console.log("Subscription on ERC-721 started with ID %s", subscription721.id);
                 const T721 = await this.userModel.findOneAndUpdate(filter, update, { new: true });
-                return { contractAddress: T721.contractAddress };
+                if (T721) {
+                    return { contractAddress: T721.contractAddress };
+                }
+
+                const TT721 = await this.user2Model.findOneAndUpdate(filter, update, { new: true });
+                if (TT721) {
+                    return { contractAddress: TT721.contractAddress };
+                }
                 // return subscription721.removeSubsription();
 
 
@@ -422,11 +429,11 @@ export class UserService {
 
                             if (userProfile) {
                                 if (userProfile.contractAddress == null || userProfile.contractAddress == '') {
-                                    subscription721.unsubscribe(function (err, succ) {
+                                    subscription1155.unsubscribe(function (err, succ) {
                                         if (succ) {
                                             return succ;
                                         } else if (err) {
-                                            return err;
+                                            return;
                                         }
                                     });
                                     // Web3.eth.clearSubscriptions();
@@ -499,7 +506,7 @@ export class UserService {
                                         if (succ) {
                                             return succ;
                                         } else if (err) {
-                                            return err;
+                                            return;
                                         }
                                     });
                                     // Web3.eth.clearSubscriptions();
@@ -573,7 +580,16 @@ export class UserService {
                 console.log("Subscription on ERC-1155 started with ID %s", subscription1155.id)
 
                 const T1155 = await this.userModel.findOneAndUpdate(filter, update, { new: true });
-                return { contractAddress: T1155.contractAddress };
+                if(T1155){
+                    return { contractAddress: T1155.contractAddress };
+                }
+
+                const TT1155 = await this.user2Model.findOneAndUpdate(filter, update, { new: true });
+                if(TT1155){
+                    return { contractAddress: TT1155.contractAddress };
+                }
+
+                
             } catch (error) {
                 return error;
             }
