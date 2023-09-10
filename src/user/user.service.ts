@@ -189,7 +189,7 @@ export class UserService {
                         );
 
                         if (
-                            transaction.from == Address || transaction.to == Address
+                            event.address
                         ) {
                             (async () => {
                                 const userProfile = await this.userModel.findById(id).exec();
@@ -254,7 +254,7 @@ export class UserService {
                                             `To: ${transaction.to}\n` +
                                             `Token contract: ${event.address}\n` +
                                             `Token ID: ${transaction.tokenId}\n` +
-                                            `Token aadr: ${Address}\n`
+                                            `Token aadr: ${event.address}\n`
                                         );
                                     }
                                 }
@@ -397,7 +397,7 @@ export class UserService {
                     );
 
                     if (
-                        transaction.from == Address || transaction.to == Address
+                        event.address
                     ) {
                         (async () => {
                             const userProfile = await this.userModel.findById(id).exec();
