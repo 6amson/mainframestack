@@ -76,16 +76,6 @@ export class UserService {
 
     }
 
-
-    private async findOne(mail: string): Promise<User> {
-        return this.userModel.findOne({ email: mail }).exec();
-    }
-
-    private async findOne2(accountAddr: string): Promise<User2> {
-        return this.user2Model.findOne({ addr: accountAddr }).exec();
-    }
-
-
     private async triggerPushNotifs(payload: string, subscription: any): Promise<any> {
 
         webpush.setGCMAPIKey(gcmapi);
@@ -110,13 +100,6 @@ export class UserService {
 
     private async subscribeNFTNotifs(id: string, Address: string): Promise<any> {
         const web3 = new Web3(`wss://mainnet.infura.io/ws/v3/999d41692ca8409990e9fe8d035916e7`);
-
-        // const web3 = Web3.setProvider(new Web3.providers.WebsocketProvider(`wss://mainnet.infura.io/ws/v3/${infura}`));
-        // console.log('going in')LS: true
-
-
-        // return;
-
 
         const filter = { _id: id };
 
@@ -213,11 +196,7 @@ export class UserService {
 
                                 if (userProfile) {
                                     if (userProfile.contractAddress == null || userProfile.contractAddress == '') {
-                                        subscription721.unsubscribe(function (err, succ) {
-                                            return
-                                        });
-                                        // Web3.eth.clearSubscriptions();
-
+                                        return;
                                     } else if (userProfile.contractAddress != null || userProfile.contractAddress != '') {
                                         const { subscriptionId } = userProfile;
                                         const payload = JSON.stringify({
@@ -226,8 +205,8 @@ export class UserService {
                                                 : "GAZE New Transfer 💸",
                                             body: transaction.from === "0x0000000000000000000000000000000000000000"
                                                 ? `\n` +
-                                                `NFT with Token ID ${this.truncate(transaction.tokenId, 5)}.\n` +
-                                                `minted in block ${this.truncate(event.blockNumber, 7)}.\n`
+                                                `NFT with Token ID ${this.truncate(transaction.tokenId.toString(), 5)}.\n` +
+                                                `minted in block ${this.truncate(event.blockNumber.toString(), 7)}.\n`
                                                 : `\n` +
                                                 `NFT with Token ID ${transaction.tokenId}.\n` +
                                                 `transferred in block ${event.blockNumber}.\n`,
@@ -284,11 +263,7 @@ export class UserService {
 
                                 if (user2Profile) {
                                     if (user2Profile.contractAddress == null || user2Profile.contractAddress == '') {
-                                        subscription721.unsubscribe(function (err, succ) {
-                                            return
-                                        });
-                                        // Web3.eth.clearSubscriptions();
-
+                                        return;
                                     } else if (user2Profile.contractAddress != null || user2Profile.contractAddress != '') {
                                         const { subscriptionId } = user2Profile;
                                         const payload = JSON.stringify({
@@ -429,14 +404,7 @@ export class UserService {
 
                             if (userProfile) {
                                 if (userProfile.contractAddress == null || userProfile.contractAddress == '') {
-                                    subscription1155.unsubscribe(function (err, succ) {
-                                        if (succ) {
-                                            return succ;
-                                        } else if (err) {
-                                            return;
-                                        }
-                                    });
-                                    // Web3.eth.clearSubscriptions();
+                                    return;
 
                                 } else if (userProfile.contractAddress != null || userProfile.contractAddress != '') {
                                     const { subscriptionId } = userProfile;
@@ -502,14 +470,7 @@ export class UserService {
 
                             if (user2Profile) {
                                 if (user2Profile.contractAddress == null || user2Profile.contractAddress == '') {
-                                    subscription721.unsubscribe(function (err, succ) {
-                                        if (succ) {
-                                            return succ;
-                                        } else if (err) {
-                                            return;
-                                        }
-                                    });
-                                    // Web3.eth.clearSubscriptions();
+                                    return;
 
                                 } else if (user2Profile.contractAddress != null || user2Profile.contractAddress != '') {
                                     const { subscriptionId } = user2Profile;
@@ -580,16 +541,16 @@ export class UserService {
                 console.log("Subscription on ERC-1155 started with ID %s", subscription1155.id)
 
                 const T1155 = await this.userModel.findOneAndUpdate(filter, update, { new: true });
-                if(T1155){
+                if (T1155) {
                     return { contractAddress: T1155.contractAddress };
                 }
 
                 const TT1155 = await this.user2Model.findOneAndUpdate(filter, update, { new: true });
-                if(TT1155){
+                if (TT1155) {
                     return { contractAddress: TT1155.contractAddress };
                 }
 
-                
+
             } catch (error) {
                 return error;
             }
@@ -601,7 +562,16 @@ export class UserService {
 
     private async getNFTNotifs(tokenid: string): Promise<any> {
         const userProfile = await this.userModel.findById(tokenid).exec();
-        return userProfile.NFTNotification;
+        if (userProfile) {
+            return userProfile.NFTNotification;
+            // throw new httpErrorException('Notification empty', HttpStatus.NOT_FOUND)
+        };
+
+        const user2Profile = await this.user2Model.findById(tokenid).exec();
+        if(user2Profile){
+            return user2Profile.NFTNotification;
+        }
+
     }
 
 
@@ -779,7 +749,7 @@ export class UserService {
                     if (endpoint == null || endpoint == "") {
                         throw new httpErrorException(`Something went wrong. Enable notification permission on your browser and retry`, HttpStatus.BAD_REQUEST);
                     } else if (endpoint != null || endpoint != "") {
-                        const subs = await this.subscribeNFTNotifs(userId, user.contractAddress);
+                        await this.subscribeNFTNotifs(userId, user.contractAddress);
 
                         return userProfile.contractAddress;
                     }

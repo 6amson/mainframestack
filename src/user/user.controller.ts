@@ -53,7 +53,7 @@ export class UserController {
         return this.userService.UnsubscribeNFTNotifs(authHeader)
     }
 
-    @Post('user/getnotifs')
+    @Get('user/getnotifs')
     async getNFTNotifs (@Headers('authorization') authHeader: string){
         
         return this.userService.getNFTNotification(authHeader);
