@@ -76,7 +76,7 @@ export class UserService {
 
     }
 
-    private async triggerPushNotifs(payload: string, subscription: any): Promise<any> {
+    private async triggerPushNotifs(payload: string, subscription: any,): Promise<any> {
 
         webpush.setGCMAPIKey(gcmapi);
         webpush.setVapidDetails(
@@ -87,10 +87,11 @@ export class UserService {
 
         const options = {
             TTL: 10000,
+            topic: "Gaze"
         };
 
         try {
-            return await webpush.sendNotification(subscription, payload);
+            return await webpush.sendNotification(subscription, payload, options);
             //return (subscription);
         } catch (err) {
             throw err;
@@ -187,7 +188,7 @@ export class UserService {
                             event.data,
                             [event.topics[1], event.topics[2], event.topics[3]]
                         );
-                        
+
                         (async () => {
                             const userProfile = await this.userModel.findById(id).exec();
 
