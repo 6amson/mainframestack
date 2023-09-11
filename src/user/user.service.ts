@@ -203,11 +203,9 @@ export class UserService {
                                             : "GAZE New Transfer 💸",
                                         body: transaction.from === "0x0000000000000000000000000000000000000000"
                                             ? `\n` +
-                                            `NFT with Token ID ${this.truncate(transaction.tokenId.toString(), 5)}.\n` +
-                                            `minted in block ${this.truncate(event.blockNumber.toString(), 7)}.\n`
+                                            `NFT with Token ID ${this.truncate(transaction.tokenId.toString(), 5)} minted in block ${this.truncate(event.blockNumber.toString(), 7)}.\n`
                                             : `\n` +
-                                            `NFT with Token ID ${transaction.tokenId}.\n` +
-                                            `transferred in block ${event.blockNumber}.\n`,
+                                            `NFT with Token ID ${transaction.tokenId} transferred in block ${event.blockNumber}.\n`,
                                         icon: 'https://res.cloudinary.com/dis6jfj29/image/upload/v1691076029/gaze_logo_no_background_dgy9tr.png',
                                     });
 
@@ -270,11 +268,9 @@ export class UserService {
                                             : "GAZE New Transfer 💸",
                                         body: transaction.from === "0x0000000000000000000000000000000000000000"
                                             ? `\n` +
-                                            `NFT with Token ID ${this.truncate(transaction.tokenId.toString(), 5)}.\n` +
-                                            `minted in block ${this.truncate(event.blockNumber.toString(), 7)}.\n`
+                                            `NFT with Token ID ${this.truncate(transaction.tokenId.toString(), 5)} minted in block ${this.truncate(event.blockNumber.toString(), 7)}.\n`
                                             : `\n` +
-                                            `NFT with Token ID ${transaction.tokenId}.\n` +
-                                            `transferred in block ${event.blockNumber}.\n`,
+                                            `NFT with Token ID ${transaction.tokenId} transferred in block ${event.blockNumber}.\n`,
                                         icon: 'https://res.cloudinary.com/dis6jfj29/image/upload/v1691076029/gaze_logo_no_background_dgy9tr.png',
                                     });
 
@@ -409,11 +405,9 @@ export class UserService {
                                         : "GAZE New Transfer 💸",
                                     body: transaction.from === "0x0000000000000000000000000000000000000000"
                                         ? `\n` +
-                                        `NFT with Token ID ${this.truncate(transaction.tokenId.toString(), 5)}.\n` +
-                                        `minted in block ${this.truncate(event.blockNumber.toString(), 7)}.\n`
+                                        `NFT with Token ID ${this.truncate(transaction.tokenId.toString(), 5)} minted in block ${this.truncate(event.blockNumber.toString(), 7)}.\n`
                                         : `\n` +
-                                        `NFT with Token ID ${transaction.tokenId}.\n` +
-                                        `transferred in block ${event.blockNumber}.\n`,
+                                        `NFT with Token ID ${transaction.tokenId} transferred in block ${event.blockNumber}.\n`,
                                     icon: 'https://res.cloudinary.com/dis6jfj29/image/upload/v1691076029/gaze_logo_no_background_dgy9tr.png',
                                 });
 
@@ -475,11 +469,9 @@ export class UserService {
                                         : "GAZE New Transfer 💸",
                                     body: transaction.from === "0x0000000000000000000000000000000000000000"
                                         ? `\n` +
-                                        `NFT with Token ID ${this.truncate(transaction.tokenId.toString(), 5)}.\n` +
-                                        `minted in block ${this.truncate(event.blockNumber.toString(), 7)}.\n`
+                                        `NFT with Token ID ${this.truncate(transaction.tokenId.toString(), 5)} minted in block ${this.truncate(event.blockNumber.toString(), 7)}.\n`
                                         : `\n` +
-                                        `NFT with Token ID ${transaction.tokenId}.\n` +
-                                        `transferred in block ${event.blockNumber}.\n`,
+                                        `NFT with Token ID ${transaction.tokenId} transferred in block ${event.blockNumber}.\n`,
                                     icon: 'https://res.cloudinary.com/dis6jfj29/image/upload/v1691076029/gaze_logo_no_background_dgy9tr.png',
                                 });
 
