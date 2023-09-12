@@ -86,8 +86,8 @@ export class UserService {
         );
 
         const options = {
-            TTL: 10000,
-            topic: "Gaze"
+            TTL: 100,
+            // topic: "Gaze"
         };
 
         try {
@@ -100,7 +100,7 @@ export class UserService {
 
 
     private async subscribeNFTNotifs(id: string, Address: string): Promise<any> {
-        const web3 = new Web3(`wss://mainnet.infura.io/ws/v3/999d41692ca8409990e9fe8d035916e7`);
+        const web3 = new Web3(`wss://mainnet.infura.io/ws/v3/${infura}`);
 
         const filter = { _id: id };
 
