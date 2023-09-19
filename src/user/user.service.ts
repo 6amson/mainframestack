@@ -270,11 +270,6 @@ export class UserService {
                     }
                 };
 
-
-                const provider = new ethers.providers.JsonRpcProvider(providerInfura);
-                const contract721 = new ethers.Contract(Address, abi721, provider);
-                const erc721filter = await contract721.filters.Transfer();
-
                 const userProfile = await this.userModel.findById(id).exec();
 
                 if (userProfile) {
@@ -284,13 +279,12 @@ export class UserService {
                     var job = new CronJob(
                         '1 * * * * *',
                         async function () {
-                            console.log('You will see this message every second');
                             const final = await c.filterAndSave(id, Address);
-                            if (final == undefined) {
-
+                            if (final == undefined || !final || final.length == 0) {
+                                console.log('You will see this message every minute');
                                 return;
 
-                            } else if (final != undefined) {
+                            } else if (final != undefined || final.length != 0) {
 
                                 final.forEach(transaction => {
                                     console.info(transaction.args.from, transaction.args.to, parseInt(transaction.args.tokenId._hex), transaction.blockNumber, transaction);
@@ -309,9 +303,9 @@ export class UserService {
 
 
                                     (async function () {
-                                        await this.triggerPushNotifs(payload, subscriptionId);
+                                        await c.triggerPushNotifs(payload, subscriptionId);
 
-                                        await this.userModel.findOneAndUpdate(
+                                        await c.userModel.findOneAndUpdate(
                                             { _id: id },
                                             {
                                                 $push: {
@@ -383,9 +377,9 @@ export class UserService {
 
 
                                     (async function () {
-                                        await this.triggerPushNotifs(payload, subscriptionId);
+                                        await c.triggerPushNotifs(payload, subscriptionId);
 
-                                        await this.user2Model.findOneAndUpdate(
+                                        await c.user2Model.findOneAndUpdate(
                                             { _id: id },
                                             {
                                                 $push: {
@@ -646,9 +640,9 @@ export class UserService {
 
 
                                     (async function () {
-                                        await this.triggerPushNotifs(payload, subscriptionId);
+                                        await c.triggerPushNotifs(payload, subscriptionId);
 
-                                        await this.userModel.findOneAndUpdate(
+                                        await c.userModel.findOneAndUpdate(
                                             { _id: id },
                                             {
                                                 $push: {
@@ -718,11 +712,10 @@ export class UserService {
                                     });
 
 
-
                                     (async function () {
-                                        await this.triggerPushNotifs(payload, subscriptionId);
+                                        await c.triggerPushNotifs(payload, subscriptionId);
 
-                                        await this.user2Model.findOneAndUpdate(
+                                        await c.user2Model.findOneAndUpdate(
                                             { _id: id },
                                             {
                                                 $push: {
