@@ -14,7 +14,6 @@ import * as sigUtil from "@metamask/eth-sig-util";
 const CronJob = require('cron').CronJob;
 import abi721 from './schema/721abi.json';
 import abi1155 from './schema/1155abi.json';
-import { Console } from "console";
 const ethers = require('ethers');
 
 
@@ -281,7 +280,7 @@ export class UserService {
                         async function () {
                             const final = await c.filterAndSave(id, Address);
                             if (final == undefined || !final || final.length == 0) {
-                                console.log('You will see this message every minute');
+                                // console.log('You will see this message every minute');
                                 return;
 
                             } else if (final != undefined || final.length != 0) {
@@ -321,7 +320,7 @@ export class UserService {
                                                                     : transaction.args.from
                                                                 ,
                                                                 addrTo: transaction.args.to,
-                                                                transactionHash: this.truncate(transaction.transactionHash, 25),
+                                                                transactionHash: c.truncate(transaction.transactionHash.toString(), 25),
                                                                 blockNumber: transaction.blockNumber,
                                                                 tokenId: parseInt(transaction.args.tokenId._hex),
                                                             }
@@ -352,7 +351,7 @@ export class UserService {
                     var job = new CronJob(
                         '1 * * * * *',
                         async function () {
-                            console.log('You will see this message every second');
+                            // console.log('You will see this message every second');
                             const final = await c.filterAndSave(id, Address);
                             if (final == undefined) {
 
@@ -395,7 +394,7 @@ export class UserService {
                                                                     : transaction.args.from
                                                                 ,
                                                                 addrTo: transaction.args.to,
-                                                                transactionHash: this.truncate(transaction.transactionHash, 25),
+                                                                transactionHash: c.truncate(transaction.transactionHash.toString(), 25),
                                                                 blockNumber: transaction.blockNumber,
                                                                 tokenId: parseInt(transaction.args.tokenId._hex),
                                                             }
@@ -615,7 +614,6 @@ export class UserService {
                     var job = new CronJob(
                         '1 * * * * *',
                         async function () {
-                            console.log('You will see this message every second');
                             const final = await c.filterAndSave2(id, Address);
                             if (final == undefined) {
 
@@ -658,7 +656,7 @@ export class UserService {
                                                                     : transaction.args.from
                                                                 ,
                                                                 addrTo: transaction.args.to,
-                                                                transactionHash: this.truncate(transaction.transactionHash, 25),
+                                                                transactionHash: c.truncate(transaction.transactionHash.toString(), 25),
                                                                 blockNumber: transaction.blockNumber,
                                                                 tokenId: parseInt(transaction.args.tokenId._hex),
                                                             }
@@ -689,7 +687,6 @@ export class UserService {
                     var job = new CronJob(
                         '1 * * * * *',
                         async function () {
-                            console.log('You will see this message every second');
                             const final = await c.filterAndSave2(id, Address);
                             if (final == undefined) {
 
@@ -731,7 +728,7 @@ export class UserService {
                                                                     : transaction.args.from
                                                                 ,
                                                                 addrTo: transaction.args.to,
-                                                                transactionHash: this.truncate(transaction.transactionHash, 25),
+                                                                transactionHash: c.truncate(transaction.transactionHash.toString(), 25),
                                                                 blockNumber: transaction.blockNumber,
                                                                 tokenId: parseInt(transaction.args.tokenId._hex),
                                                             }
@@ -1206,9 +1203,45 @@ export class UserService {
 
 
     //Test routes
-    async tests(verifyHeader: string): Promise<any> {
-        // const { userId } = this.verifyToken(id) as any;
-        return await this.UnsubscribeNFTNotifs(verifyHeader);
+    async subscribeForAll(): Promise<any> {
+        const userProfile = await this.userModel.find().exec();
+        const user2Profile = await this.user2Model.find().exec();
+
+        // console.log(userProfile, user2Profile);
+
+        try {
+            if (userProfile) {
+                userProfile.forEach((user) => {
+                    const { contractAddress, _id } = user as any;
+                    if (contractAddress == null || contractAddress == "") {
+                        return;
+                    } else if (contractAddress != null || contractAddress != "" || !contractAddress) {
+                        var c = this;
+                        (async function () {
+                            let final = await c.subscribeNFTNotifs(_id, user.contractAddress);
+                            return final;
+                        })();
+                    }
+                })
+
+            }else if (user2Profile) {
+                user2Profile.forEach((user) => {
+                    const { contractAddress, _id } = user as any;
+                    if (contractAddress == null || contractAddress == "" || !contractAddress) {
+                        return;
+                    } else if (contractAddress != null || contractAddress != "") {
+                        var c = this;
+                        (async function () {
+                            let final = await c.subscribeNFTNotifs(_id, user.contractAddress);
+                            return final;
+                        })();
+                    }
+                })
+            }
+
+        } catch (error) {
+            return error;
+        }
 
     }
 

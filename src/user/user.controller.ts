@@ -66,10 +66,4 @@ export class UserController {
         return this.userService.proto(authHeader);
     }
 
-    @Post('user/test')
-    async tests (@Headers('authorization') authHeader: string){
-        return this.userService.UnsubscribeNFTNotifs(authHeader);
-        // return response.status(HttpStatus.OK).json(userProfile);
-    }
-
 }
