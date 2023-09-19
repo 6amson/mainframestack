@@ -26,6 +26,8 @@ export class User {
     NFTsubscriptionId: string;
     @Prop({ required: false })
     NFTNotification: [any];
+    @Prop({ required: false })
+    prevBlock: number | null;
 }
 
 @Schema()
@@ -43,6 +45,8 @@ export class User2 {
     NFTsubscriptionId: string;
     @Prop({ required: false })
     NFTNotification: [any];
+    @Prop({ required: false })
+    prevBlock: number | null;
 }
 export const UserSchema = SchemaFactory.createForClass(User);
 export const UserSchema2 = SchemaFactory.createForClass(User2);
