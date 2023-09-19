@@ -280,13 +280,12 @@ export class UserService {
                         async function () {
                             const final = await c.filterAndSave(id, Address);
                             if (final == undefined || !final || final.length == 0) {
-                                // console.log('You will see this message every minute');
                                 return;
 
                             } else if (final != undefined || final.length != 0) {
 
                                 final.forEach(transaction => {
-                                    console.info(transaction.args.from, transaction.args.to, parseInt(transaction.args.tokenId._hex), transaction.blockNumber, transaction);
+                                    // console.info(transaction.args.from, transaction.args.to, parseInt(transaction.args.tokenId._hex), transaction.blockNumber, transaction);
                                     const payload = JSON.stringify({
                                         title: transaction.args.from === "0x0000000000000000000000000000000000000000"
                                             ? "GAZE New Mint 🚀"
@@ -351,7 +350,6 @@ export class UserService {
                     var job = new CronJob(
                         '1 * * * * *',
                         async function () {
-                            // console.log('You will see this message every second');
                             const final = await c.filterAndSave(id, Address);
                             if (final == undefined) {
 
@@ -360,7 +358,7 @@ export class UserService {
                             } else if (final != undefined) {
 
                                 final.forEach(transaction => {
-                                    console.info(transaction.args.from, transaction.args.to, parseInt(transaction.args.tokenId._hex), transaction.blockNumber, transaction);
+                                    // console.info(transaction.args.from, transaction.args.to, parseInt(transaction.args.tokenId._hex), transaction.blockNumber, transaction);
                                     const payload = JSON.stringify({
                                         title: transaction.args.from === "0x0000000000000000000000000000000000000000"
                                             ? "GAZE New Mint 🚀"
@@ -622,7 +620,7 @@ export class UserService {
                             } else if (final != undefined) {
 
                                 final.forEach(transaction => {
-                                    console.info(transaction.args.from, transaction.args.to, parseInt(transaction.args.tokenId._hex), transaction.blockNumber, transaction);
+                                    // console.info(transaction.args.from, transaction.args.to, parseInt(transaction.args.tokenId._hex), transaction.blockNumber, transaction);
                                     const payload = JSON.stringify({
                                         title: transaction.args.from === "0x0000000000000000000000000000000000000000"
                                             ? "GAZE New Mint 🚀"
@@ -695,7 +693,7 @@ export class UserService {
                             } else if (final != undefined) {
 
                                 final.forEach(transaction => {
-                                    console.info(transaction.args.from, transaction.args.to, parseInt(transaction.args.tokenId._hex), transaction.blockNumber, transaction);
+                                    // console.info(transaction.args.from, transaction.args.to, parseInt(transaction.args.tokenId._hex), transaction.blockNumber, transaction);
                                     const payload = JSON.stringify({
                                         title: transaction.args.from === "0x0000000000000000000000000000000000000000"
                                             ? "GAZE New Mint 🚀"
@@ -1018,7 +1016,6 @@ export class UserService {
                 id,
             }
 
-            // return (existingUser);
         } else if (!existingUser && recovered == user.accountAddr) {
             const newUser = await this.user2Model.create({ ...user, signature: user.signature });
             newUser.save();
