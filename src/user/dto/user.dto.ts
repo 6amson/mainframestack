@@ -10,20 +10,18 @@ export class UserDto {
     readonly password: string;
 }
 
-export class updateUserdto {
-    @IsNotEmpty()
-    readonly contractAddress: string;
-
-    @IsNotEmpty()
-    readonly  subscriptionId: object;
+export class UpdateProductDto {
+    name?: string;
+    price?: number;
+    description?: string;
+    image?: string;
+    amount?: number;
 }
 
-export class metamaskDto {
-    @IsNotEmpty()
-    readonly accountAddr: string;
-}
-
-export class metamaskNonceDto {
-    @IsNotEmpty()
-    readonly accountAddr: string;
+export class ProductDto {
+    name: string;
+    price: number;
+    description: string;
+    image: string;
+    amount: number;
 }

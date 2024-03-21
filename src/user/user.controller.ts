@@ -1,29 +1,21 @@
 import { Body, Controller, Delete, Get, HttpStatus, Redirect, Param, Post, Headers, Put,Req, Res } from "@nestjs/common";
-import { User, User2 } from "./schema/user.schema";
+import { User, Product } from "./schema/user.schema";
 import { UserService } from "./user.service";
-import { UserDto, metamaskDto } from "./dto/user.dto";
-import { updateUserdto } from "./dto/user.dto";
+import { UserDto, UpdateProductDto } from "./dto/user.dto";
 
 @Controller()
 export class UserController {
     constructor(private readonly userService: UserService) { }
 
     @Get()
-    @Redirect('https://documenter.getpostman.com/view/26141564/2s9Y5VVQWB', 301)
+    // @Redirect('https://documenter.getpostman.com/view/26141564/2s9Y5VVQWB', 301)
+    @Redirect('https://gaze.ink', 301)
     redirectToWebsite() {}
 
 
     @Post('user/signup')
     async Signup(@Res() response, @Body() user: User) {
         const newUSer = await this.userService.signup(user);
-        return response.status(HttpStatus.CREATED).json({
-            ...newUSer
-        })
-    }
-
-    @Post('user/signupmeta')
-    async SignupMeta(@Res() response, @Body() user: User2) {
-        const newUSer = await this.userService.signupMetamask(user);
         return response.status(HttpStatus.CREATED).json({
             ...newUSer
         })
@@ -41,29 +33,11 @@ export class UserController {
         return this.userService.verifyAuth(authHeader)
     }
 
-    @Post('user/updateuser')
-    async updateuser (@Headers('authorization') authHeader: string, @Body() user: updateUserdto){
-        
-        return this.userService.updateAndSubscribe(user, authHeader);
-    }
-
-    @Get('user/unsubscribe')
-    async unsubscribe (@Headers('authorization') authHeader: string,){
-        
-        return this.userService.UnsubscribeNFTNotifs(authHeader)
-    }
-
-    @Get('user/getnotifs')
-    async getNFTNotifs (@Headers('authorization') authHeader: string){
-        
-        return this.userService.getNFTNotification(authHeader);
-    }
-
 
     @Post('user/proto')
-    async proto (@Headers('authorization') authHeader: string){
+    async proto (){
         
-        return this.userService.proto(authHeader);
+        return this.userService.proto();
     }
 
 }

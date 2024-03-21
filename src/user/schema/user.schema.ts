@@ -1,10 +1,9 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Prop, Schema, SchemaFactory} from "@nestjs/mongoose";
 import { IsEmail, IsNotEmpty } from 'class-validator';
-import { HydratedDocument } from 'mongoose';
+import { HydratedDocument, Document, Types } from 'mongoose';
 
 export type UserDocument = HydratedDocument<User>;
-export type UserDocument2 = HydratedDocument<User2>;
-
+// export type UserDocument = Document & User;
 
 @Schema()
 export class User {
@@ -18,35 +17,28 @@ export class User {
     @Prop({ required: true })
     @IsNotEmpty()
     password: string;
-    @Prop({ required: false })
-    contractAddress: string;
-    @Prop({ required: false, type: Object })
-    subscriptionId: object;
-    @Prop({ required: false })
-    NFTsubscriptionId: string;
-    @Prop({ required: false })
-    NFTNotification: [any];
-    @Prop({ required: false })
-    prevBlock: number | null;
 }
 
 @Schema()
-export class User2 {
-    @Prop({ required: true, unique: true})
-    @IsNotEmpty()
-    accountAddr: string;
-    @Prop({ unique: true, required: true,  type: Object })
-    signature:  {sign: string, msg: string};
-    @Prop({ required: false })
-    contractAddress: string;
-    @Prop({ required: false, type: Object })
-    subscriptionId: object;
-    @Prop({ required: false })
-    NFTsubscriptionId: string;
-    @Prop({ required: false })
-    NFTNotification: [any];
-    @Prop({ required: false })
-    prevBlock: number | null;
+export class Product extends Document {
+    @Prop({ required: true })
+    name: string;
+
+    @Prop({ required: true })
+    price: number;
+
+    @Prop({ required: true })
+    description: string;
+
+    @Prop({ required: true })
+    image: string;
+
+    @Prop({ required: true })
+    amount: number;
+
+    @Prop({ type: Types.ObjectId, ref: 'User' }) 
+    user: User;
 }
+
 export const UserSchema = SchemaFactory.createForClass(User);
-export const UserSchema2 = SchemaFactory.createForClass(User2);
+export const ProductSchema = SchemaFactory.createForClass(Product);
