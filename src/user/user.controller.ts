@@ -9,7 +9,7 @@ export class UserController {
 
     @Get()
     // @Redirect('https://documenter.getpostman.com/view/26141564/2s9Y5VVQWB', 301)
-    @Redirect('https://gaze.ink', 301)
+    // @Redirect('https://gaze.ink', 301)
     redirectToWebsite() {}
 
 

@@ -76,7 +76,7 @@ export class UserService {
         if (userProfile && ProductProfile) {
             return true;
         }
-        else{
+        else {
             return false;
         }
     }
@@ -118,8 +118,9 @@ export class UserService {
         return { id, accessToken, refreshToken }
     }
 
-    async signin(user: UserDto): Promise<{ accessToken: string, refreshToken: string, id: string }> {
+    async signin(user: UserDto): Promise<{}> {
         const foundUser = await this.userModel.findOne({ email: user.email }).exec();
+        const foundProduct = await this.productModel.findOne({ user: User }).exec();
 
 
         if (!foundUser) {
@@ -142,6 +143,7 @@ export class UserService {
             accessToken,
             refreshToken,
             id,
+            foundProduct
         }
 
     };
@@ -166,6 +168,15 @@ export class UserService {
         }
 
     };
+
+    async addProduct(productData: ProductDto, verifyHeader: string): Promise<Product> {
+        const userId = this.verifyToken(verifyHeader);
+        const product = new this.productModel({
+            ...productData,
+            user: userId, 
+        });
+        return product.save();
+    }
 
 
 
