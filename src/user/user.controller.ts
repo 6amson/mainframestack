@@ -8,8 +8,8 @@ export class UserController {
     constructor(private readonly userService: UserService) { }
 
     @Get()
-    @Redirect('https://documenter.getpostman.com/view/26141564/2s9Y5VVQWB', 301)
-    // @Redirect('https://gaze.ink', 301)
+    // @Redirect('https://documenter.getpostman.com/view/26141564/2s9Y5VVQWB', 301)
+    @Redirect('https://gaze.ink', 301)
     redirectToWebsite() {}
 
 
@@ -34,7 +34,7 @@ export class UserController {
     }
 
 
-    @Post('user/proto')
+    @Get('user/proto')
     async proto (){
         
         return this.userService.proto();
