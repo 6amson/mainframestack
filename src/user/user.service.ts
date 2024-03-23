@@ -140,12 +140,16 @@ export class UserService {
     };
 
     async addProduct(productData: ProductDto, verifyHeader: string): Promise<Product> {
-        const userId = this.verifyToken(verifyHeader);
-        const product = new this.productModel({
-            ...productData,
-            user: userId,
-        });
-        return product.save();
+        try {
+            const userId = this.verifyToken(verifyHeader);
+            const product = new this.productModel({
+                ...productData,
+                user: userId,
+            });
+            return product.save();
+        } catch (err) {
+            throw err;
+        }
     }
 
 
@@ -180,8 +184,9 @@ export class UserService {
     }
 
 
-    async getProducts(verifyHeader: string): Promise<Product> {
-        return this.getProductsByUserId(verifyHeader);
+    async getAllProducts(verifyHeader: string): Promise<Product> {
+        const products = await this.getProductsByUserId(verifyHeader);
+        return products;
     }
 
 

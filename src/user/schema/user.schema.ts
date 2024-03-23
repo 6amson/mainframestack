@@ -7,7 +7,7 @@ export type UserDocument = HydratedDocument<User>;
 
 @Schema()
 export class User {
-    @Prop({ required: true })
+    @Prop({ required: true, unique: true, })
     @IsNotEmpty()
     username: string;
     @Prop({ required: true, unique: true, lowercase: true })

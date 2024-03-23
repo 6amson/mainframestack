@@ -12,4 +12,4 @@ const databaseUrl = process.env.DATABASE_URL;
     UserModule,
   ],
 })
-export class AppModule {}
+export class AppModule { }

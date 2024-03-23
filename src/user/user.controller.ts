@@ -49,7 +49,7 @@ export class UserController {
 
     @Get('user/getproduct')
     async getProduct (@Headers('authorization') authHeader: string){
-        return this.userService.getProducts(authHeader);
+        return this.userService.getAllProducts(authHeader);
     }
 
 
