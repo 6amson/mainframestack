@@ -8,7 +8,7 @@ const bcrypt = require('bcrypt');
 import { config } from 'dotenv';
 import { UpdateProductDto, UserDto } from "./dto/user.dto";
 import { ProductDto } from "./dto/user.dto";
-
+import mongoose from "mongoose";
 
 
 
@@ -30,14 +30,6 @@ export class UserService {
 
 
     //METHODS
-    private truncate = (string: string, limit: number) => {
-        if (string.length <= limit) {
-            return string;
-        }
-        return string.slice(0, limit) + "...";
-    }
-
-
     private generateAccessToken(payload: any): string {
         return jwt.sign({ payload }, accessTokenSecret, {
             expiresIn: '90d',
@@ -50,47 +42,25 @@ export class UserService {
         );
     }
 
+    private validateToken(token: string, secret: string): string | object {
+        if (token == undefined || token == "") throw new httpErrorException(`${token}, Undefined token, Unauthorized access.`, HttpStatus.NOT_ACCEPTABLE)
+        const tokens = token.slice(7, token.length).toString();
+        const decoded = jwt.verify(tokens, secret);
+        return decoded;
+    }
+
     private verifyToken(verifyHeader: string): string {
         const token = verifyHeader;
-
         const final = this.validateToken(token, accessTokenSecret) as any;
-        const refreshToken = this.generateRefreshToken(final.payload);
         const userId = final.payload;
         return userId;
 
     }
 
-    private validateToken(token: string, secret: string): string | object {
-        if (token == undefined || token == "") throw new httpErrorException(`${token}, Undefined token, Unauthorized access.`, HttpStatus.NOT_ACCEPTABLE)
-        const tokens = token.slice(7, token.length).toString();
-        const decoded = jwt.verify(tokens, secret);
-
-        return decoded;
+    private async getProductsByUserId(verifyHeader: string): Promise<any> {
+        const Id = this.verifyToken(verifyHeader);
+        return await this.productModel.find({ user: Id }).exec();
     }
-
-    private async filterAndSave(id: string,): Promise<boolean> {
-
-        const userProfile = await this.userModel.findById(id).exec();
-        const ProductProfile = await this.productModel.findById(id).exec();
-
-        if (userProfile && ProductProfile) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-
-
-
-    //     const update = {
-    //         $set: {
-    //             NFTsubscriptionId: subscription1155.id,
-    //         }
-    //     };
-
-
-
 
 
     //ROUTES
@@ -120,8 +90,7 @@ export class UserService {
 
     async signin(user: UserDto): Promise<{}> {
         const foundUser = await this.userModel.findOne({ email: user.email }).exec();
-        const foundProduct = await this.productModel.findOne({ user: User }).exec();
-
+        const foundProduct = await this.productModel.find({ user: User }).exec();
 
         if (!foundUser) {
             throw new HttpException('Invalid email or password', HttpStatus.UNAUTHORIZED);
@@ -165,6 +134,7 @@ export class UserService {
             }
         } catch (error) {
             console.log(error.message);
+            throw new HttpException('Invalid Token', HttpStatus.BAD_REQUEST);
         }
 
     };
@@ -173,15 +143,49 @@ export class UserService {
         const userId = this.verifyToken(verifyHeader);
         const product = new this.productModel({
             ...productData,
-            user: userId, 
+            user: userId,
         });
         return product.save();
     }
 
 
+    async updateProduct(verifyHeader: string, productId: string, updateData: UpdateProductDto): Promise<Product> {
+        const Id = this.verifyToken(verifyHeader);
+        const product = await this.productModel.findOne({ _id: productId });
+
+        if (product.user.toString() !== Id) {
+            throw new HttpException('You do not have permission to access this product', HttpStatus.FORBIDDEN);
+        }
+
+        const updatedProduct = await this.productModel.findOneAndUpdate(
+            { _id: productId },
+            { $set: updateData },
+            { new: true }
+        );
+
+        return updatedProduct;
+    }
+
+    async deleteProduct(verifyHeader: string, productId: string): Promise<any | null> {
+        const Id = this.verifyToken(verifyHeader);
+        const product = await this.productModel.findOne({ _id: productId });
+
+        if (product.user.toString() !== Id) {
+            throw new HttpException('You do not have permission to access this product', HttpStatus.FORBIDDEN);
+        }
+
+        const deletedProduct = await this.productModel.deleteOne({ _id: productId }).exec();
+
+        return deletedProduct;
+    }
+
+
+    async getProducts(verifyHeader: string): Promise<Product> {
+        return this.getProductsByUserId(verifyHeader);
+    }
+
 
     //Test routes
-
     async proto(): Promise<string> {
         return 'yes world';
     }

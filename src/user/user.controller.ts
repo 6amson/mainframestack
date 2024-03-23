@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, HttpStatus, Redirect, Param, Post, Headers, Put,Req, Res } from "@nestjs/common";
 import { User, Product } from "./schema/user.schema";
 import { UserService } from "./user.service";
-import { UserDto, UpdateProductDto } from "./dto/user.dto";
+import { UserDto, UpdateProductDto, ProductDto } from "./dto/user.dto";
 
 @Controller()
 export class UserController {
@@ -33,10 +33,29 @@ export class UserController {
         return this.userService.verifyAuth(authHeader)
     }
 
+    @Post('user/addproduct')
+    async addProduct (@Headers('authorization') authHeader: string, @Body() productData: ProductDto){
+        return this.userService.addProduct(productData, authHeader);
+    }
+
+    @Put('user/updateproduct')
+    async updateProduct (@Headers('authorization') authHeader: string, @Body() productData: UpdateProductDto, @Headers('productId') productId: string){
+        return this.userService.updateProduct(authHeader, productId, productData);
+    }
+
+    @Delete('user/deleteproduct')
+    async deleteProduct (@Headers('authorization') authHeader: string, @Headers('productId') productId: string){
+        return this.userService.deleteProduct(authHeader, productId);
+    }
+
+    @Get('user/getproduct')
+    async getProduct (@Headers('authorization') authHeader: string){
+        return this.userService.getProducts(authHeader);
+    }
+
 
     @Get('user/proto')
     async proto (){
-        
         return this.userService.proto();
     }
 
