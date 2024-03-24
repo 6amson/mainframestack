@@ -141,11 +141,14 @@ export class UserService {
     async addProduct(productData: ProductDto, verifyHeader: string): Promise<Product> {
         try {
             const userId = this.verifyToken(verifyHeader);
+            const foundProduct = await this.productModel.find({ user: userId }).exec();
+
             const product = new this.productModel({
                 ...productData,
                 user: userId,
             });
-            return product.save();
+            product.save();
+            return product;
         } catch (err) {
             throw err;
         }
@@ -172,6 +175,10 @@ export class UserService {
     async deleteProduct(verifyHeader: string, productId: string): Promise<any | null> {
         const Id = this.verifyToken(verifyHeader);
         const product = await this.productModel.findOne({ _id: productId });
+
+        if (!product) {
+            throw new HttpException(`Product with Id ${productId} not found`, HttpStatus.NOT_FOUND);
+        }
 
         if (product.user.toString() !== Id) {
             throw new HttpException('You do not have permission to access this product', HttpStatus.FORBIDDEN);
