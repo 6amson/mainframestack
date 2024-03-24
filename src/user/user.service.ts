@@ -8,7 +8,6 @@ const bcrypt = require('bcrypt');
 import { config } from 'dotenv';
 import { UpdateProductDto, UserDto } from "./dto/user.dto";
 import { ProductDto } from "./dto/user.dto";
-import mongoose from "mongoose";
 
 
 
