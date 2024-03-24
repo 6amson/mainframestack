@@ -90,7 +90,7 @@ export class UserService {
 
     async signin(user: UserDto): Promise<{}> {
         const foundUser = await this.userModel.findOne({ email: user.email }).exec();
-        const foundProduct = await this.productModel.find({ user: User }).exec();
+        const foundProduct = await this.productModel.find({ user: foundUser._id.toString() }).exec();
 
         if (!foundUser) {
             throw new HttpException('Invalid email or password', HttpStatus.UNAUTHORIZED);
@@ -187,12 +187,6 @@ export class UserService {
     async getAllProducts(verifyHeader: string): Promise<Product> {
         const products = await this.getProductsByUserId(verifyHeader);
         return products;
-    }
-
-
-    //Test routes
-    async proto(): Promise<string> {
-        return 'yes world';
     }
 }
 

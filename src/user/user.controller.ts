@@ -52,10 +52,4 @@ export class UserController {
         return this.userService.getAllProducts(authHeader);
     }
 
-
-    @Get('user/proto')
-    async proto (){
-        return this.userService.proto();
-    }
-
 }

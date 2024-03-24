@@ -11,6 +11,7 @@ config();
 let userId = 'id';
 let productId = '11';
 
+//product array, mocking database schema for products
 let userProducts = [{
     productId: '11',
     name: 'bag',
@@ -22,6 +23,7 @@ let userProducts = [{
 },
 ]
 
+//product schema mocking 'UpdateProductDto'
 let newProducts = {
     name: 'a big bag',
     price: 3,
@@ -30,6 +32,7 @@ let newProducts = {
     amount: 3,
 }
 
+//product schema mocking 'ProductDto' with productId and user addition.
 let productData = {
     productId: '12',
     name: 'a blouse',
@@ -40,6 +43,7 @@ let productData = {
     user: '9'
 }
 
+//User schema mocking Users document in mongodb
 let Users = [{
     username: 'testuser',
     email: 'testuser@gmail.com',
@@ -47,17 +51,20 @@ let Users = [{
     Id: 'id',
 }];
 
+//user object to mock a new user trying to signup
 const newUser = {
     username: 'testuser2',
     email: 'testuser2@gmail.com',
     password: 'password2',
 }
 
+//user object mocking 'userDto' for signin API
 const user = {
     email: 'testuser@gmail.com',
     password: 'password',
 };
 
+//a mocking class for methods used in the API routes for testing in Jest
 export class userRepositoryMock {
     findOne = jest.fn((user): boolean => {
         const foundUsers = Users.find(item => item.email == user.email);
@@ -88,16 +95,16 @@ export class userRepositoryMock {
         }
     });
 
-    getUserProduct = jest.fn((Id: string) => {
-        const foundProducts = userProducts.find((item) => item.user == Id);
-        const foundProducts2 = userProducts.find((item) => item.productId == productId);
-        if (foundProducts == foundProducts2) {
-            return foundProducts;
-        }
-        else {
-            throw new httpErrorException('no product', HttpStatus.NOT_FOUND);
-        }
-    });
+    // getUserProduct = jest.fn((Id: string) => {
+    //     const foundProducts = userProducts.find((item) => item.user == Id);
+    //     const foundProducts2 = userProducts.find((item) => item.productId == productId);
+    //     if (foundProducts == foundProducts2) {
+    //         return foundProducts;
+    //     }
+    //     else {
+    //         throw new httpErrorException('no product', HttpStatus.NOT_FOUND);
+    //     }
+    // });
 
 }
 
@@ -112,6 +119,7 @@ describe('UsersService', () => {
                 {
                     provide: UserService,
                     useValue: {
+                        //signin mock function,checks the Users array for existing users and return an object.
                         signin: jest.fn((user): {} => {
                             if (user.email && user.password) {
                                 const findOne = new userRepositoryMock;
@@ -126,18 +134,21 @@ describe('UsersService', () => {
                             }
                         }),
 
+                        //signup mock API, returns an object if the new user isn't found in the Users array. Return an object
                         signup: jest.fn(({ username, ...user }): any => {
                             const create = new userRepositoryMock;
                             return create.create(user);
                         }),
 
+                        //verifyauth API to mock JWT, return a string and takes in a string as well.
                         verifyAuth: jest.fn((token: string) => {
                             if (token) { return 'token1' }
                         }),
 
+                        //update product API. Takes an object of product details, updates the mock Product array and returns the updated array
                         updateProduct: jest.fn((Id: string, productId: string,
                             data: {
-                                name: string,
+                                name?: string,
                                 price?: number,
                                 description?: string,
                                 image?: string,
@@ -155,11 +166,13 @@ describe('UsersService', () => {
                             return filter;
                         }),
 
+                        //getprodcts return the Products array that has the desired Id 
                         getAllProducts: jest.fn((Id: string) => {
                             const products = userProducts.find((item) => item.user == Id);
                             return products;
                         }),
 
+                        //deleteProducts API checks the product array for preffered product usign userId and productId, if found, it return null, mocking a deleted object
                         deleteProduct: jest.fn((Id: string, productId: string): null => {
                             const filterproduct = new userRepositoryMock;
                             const filter = filterproduct.filterProduct(Id, productId);
@@ -171,6 +184,7 @@ describe('UsersService', () => {
                             }
                         }),
 
+                        //Mocks the addProduct API, takes an object and UserId, and return the same object 
                         addProduct: jest.fn((datum: {
                             productId: string,
                             name: string;
